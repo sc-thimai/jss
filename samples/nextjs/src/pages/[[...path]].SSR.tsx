@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { GetServerSideProps } from 'next';
 import NotFound from 'src/NotFound';
 import {
   SitecoreContext,
   ComponentPropsContext,
   handleExperienceEditorFastRefresh,
+  isServer,
 } from '@sitecore-jss/sitecore-jss-nextjs';
 import Layout from 'src/Layout';
 import { SitecorePageProps } from 'lib/page-props';
@@ -12,12 +13,12 @@ import { sitecorePagePropsFactory } from 'lib/page-props-factory';
 import { componentFactory } from 'temp/componentFactory';
 import { StyleguideSitecoreContextValue } from 'lib/component-props';
 import { trackingService } from 'lib/tracking-service';
+import { layoutPersonalizationService } from 'lib/layout-personalization-service';
 
 const SitecorePage = ({
   notFound,
   layoutData,
   componentProps,
-  tracked,
   isPreview,
 }: SitecorePageProps): JSX.Element => {
   useEffect(() => {
@@ -30,24 +31,40 @@ const SitecorePage = ({
     return <NotFound />;
   }
 
-  useEffect(() => {
-    // Do not trigger client tracking when
-    // - the page is requested by Sitecore XP instance
-    //   * no need to track in Edit and Preview modes
-    //   * in Explore mode all requests will be tracked by Sitecore XP out of the box
-    // - the page is already tracked by Layout service
-    if (isPreview || tracked) return;
-
-    trackingService
-      .trackCurrentPage(layoutData.sitecore.context, layoutData.sitecore.route)
-      .catch((error: unknown) => console.error('Tracking failed: ' + error));
-  }, [isPreview, tracked, layoutData]);
-
   const context: StyleguideSitecoreContextValue = {
     route: layoutData.sitecore.route,
     itemId: layoutData.sitecore.route?.itemId,
     ...layoutData.sitecore.context,
   };
+
+  // Start loading personalization before render occurs, personalization loading components rely in service state
+  // Do not load personalization twice for pages with query, see Caveats for dynamic routes in Next.js doc
+  useMemo(() => {
+    const disconnectedMode =
+      layoutData.sitecore.route &&
+      layoutData.sitecore.route.layoutId === 'available-in-connected-mode';
+    if (disconnectedMode) {
+      return;
+    }
+    // Load personalization client side only
+    if (isServer()) {
+      return;
+    }
+    // Do not trigger client tracking when pages are requested by Sitecore XP instance:
+    // - no need to track in Edit and Preview modes
+    // - in Explore mode all requests will be tracked by Sitecore XP out of the box
+    if (isPreview) {
+      return;
+    }
+
+    layoutPersonalizationService.loadPersonalization(context, context.route).then((p) => {
+      if (!p.hasPersonalizationComponents && !layoutData.sitecore.tracked) {
+        trackingService
+          .trackCurrentPage(layoutData.sitecore.context, layoutData.sitecore.route)
+          .catch((error: unknown) => console.error('Tracking failed: ' + error));
+      }
+    });
+  }, [isPreview, layoutData]);
 
   return (
     <ComponentPropsContext value={componentProps}>
@@ -66,10 +83,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const props = await sitecorePagePropsFactory.create(context);
 
   if (!props.notFound) {
-    return { props };
+    return {
+      props,
+    };
   }
 
-  if (props.tracked) {
+  if (props.layoutData?.sitecore.tracked) {
     trackingService.signalSkipNextPage(context.res);
   }
 

@@ -38,6 +38,19 @@ export {
   ComponentFields,
   ComponentParams,
   isServer,
+  LayoutPersonalizationService,
+  PersonalizationResult,
+  PersonalizationLoadResult,
+  LayoutFragmentData,
+  LayoutFragmentService,
+  GraphQLLayoutFragmentService,
+  GraphQLLayoutFragmentServiceConfig,
+  PersonalizationDecisionData,
+  RenderingPersonalizationDecision,
+  PersonalizationDecisionsService,
+  RestPersonalizationDecisionsServiceConfig,
+  RestPersonalizationDecisionsService,
+  LayoutPersonalizationUtils,
 } from '@sitecore-jss/sitecore-jss';
 
 export { ManifestInstance } from '@sitecore-jss/sitecore-jss-manifest';
@@ -96,9 +109,13 @@ export {
   VisitorIdentification,
   SitecoreContext,
   SitecoreContextState,
+  SitecoreContextProps,
   SitecoreContextReactContext,
   withSitecoreContext,
   useSitecoreContext,
   withExperienceEditorChromes,
   withPlaceholder,
+  withComponentFactory,
+  useComponentFactory,
+  usePersonalization,
 } from '@sitecore-jss/sitecore-jss-react';

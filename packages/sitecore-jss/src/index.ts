@@ -42,6 +42,29 @@ export {
 
 export { GraphQLLayoutService, GraphQLLayoutServiceConfig } from './layout/graphql-layout-service';
 
+export { LayoutPersonalizationUtils } from './personalization/layout-personalization-utils';
+
+export {
+  LayoutPersonalizationService,
+  PersonalizationResult,
+  PersonalizationLoadResult,
+} from './personalization/layout-personalization-service';
+
+export {
+  LayoutFragmentData,
+  LayoutFragmentService,
+  GraphQLLayoutFragmentService,
+  GraphQLLayoutFragmentServiceConfig,
+} from './personalization/layout-fragment-service';
+export {
+  DecisionsContext,
+  PersonalizationDecisionData,
+  RenderingPersonalizationDecision,
+  PersonalizationDecisionsService,
+  RestPersonalizationDecisionsServiceConfig,
+  RestPersonalizationDecisionsService,
+} from './personalization/personalization-decisions-service';
+
 // TODO: these are deprecated and we should stop exporting them
 import { fetchRouteData, fetchPlaceholderData } from './layout/rest-layout-service';
 const dataApi = { fetchRouteData, fetchPlaceholderData };

@@ -41,7 +41,14 @@ describe('utils', () => {
     });
 
     it('should return false when EE is not active', () => {
-      global.window = { document: {}, Sitecore: null };
+      global.window = {
+        document: {
+          querySelector: () => {
+            return null;
+          },
+        },
+        Sitecore: null,
+      };
       expect(isExperienceEditorActive()).to.be.false;
     });
 

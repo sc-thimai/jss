@@ -1,5 +1,6 @@
 import { Text, RichText, useSitecoreContext, Field } from '@sitecore-jss/sitecore-jss-nextjs';
 import { StyleguideComponentProps, StyleguideSitecoreContextValue } from 'lib/component-props';
+import { withDatasourceCheck } from 'enhancers/withDatasourceCheck';
 
 type StyleguideLayoutTabsTabProps = StyleguideComponentProps & {
   fields: {
@@ -32,4 +33,4 @@ const StyleguideLayoutTabsTab = (props: StyleguideLayoutTabsTabProps): JSX.Eleme
   );
 };
 
-export default StyleguideLayoutTabsTab;
+export default withDatasourceCheck(StyleguideLayoutTabsTab);

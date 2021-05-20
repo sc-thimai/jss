@@ -1,5 +1,6 @@
 import { Text, RichText, Field } from '@sitecore-jss/sitecore-jss-nextjs';
 import { StyleguideComponentProps } from 'lib/component-props';
+import { withDatasourceCheck } from 'enhancers/withDatasourceCheck';
 
 type ContentBlockProps = StyleguideComponentProps & {
   fields: {
@@ -21,4 +22,4 @@ const ContentBlock = ({ fields }: ContentBlockProps): JSX.Element => (
   </>
 );
 
-export default ContentBlock;
+export default withDatasourceCheck(ContentBlock);

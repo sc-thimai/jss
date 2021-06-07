@@ -19,6 +19,7 @@ const SitecorePage = ({
   notFound,
   layoutData,
   componentProps,
+  tracked,
   isPreview,
 }: SitecorePageProps): JSX.Element => {
   useEffect(() => {
@@ -58,7 +59,7 @@ const SitecorePage = ({
     }
 
     layoutPersonalizationService.loadPersonalization(context, context.route).then((p) => {
-      if (!p.hasPersonalizationComponents && !layoutData.sitecore.tracked) {
+      if (!p.hasPersonalizationComponents && !tracked) {
         trackingService
           .trackCurrentPage(layoutData.sitecore.context, layoutData.sitecore.route)
           .catch((error: unknown) => console.error('Tracking failed: ' + error));
@@ -88,7 +89,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  if (props.layoutData?.sitecore.tracked) {
+  if (props.tracked) {
     trackingService.signalSkipNextPage(context.res);
   }
 

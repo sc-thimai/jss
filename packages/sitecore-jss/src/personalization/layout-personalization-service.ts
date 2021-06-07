@@ -96,8 +96,10 @@ export class LayoutPersonalizationService {
     if (personalizedRenderings.length === 0) {
       return {};
     }
+
     const personalizedRenderingIds = personalizedRenderings.map((r) => r.uid);
     let personalizedFragments: { [key: string]: ComponentRendering | null | undefined } = {};
+
     try {
       const personalizationDecisionsResult = await this.personalizationDecisionsService.getPersonalizationDecisions(
         {
@@ -108,8 +110,9 @@ export class LayoutPersonalizationService {
       );
       personalizedFragments = await this.resolveFragments(personalizationDecisionsResult, context);
     } catch (error) {
+      // catch all errors on getting a personalization decision
       console.error(error);
-      // default will be used for undefined fragments
+      // default will be used for unresolved fragments
       personalizedRenderingIds.forEach((id) => (personalizedFragments[id] = undefined));
     }
 
@@ -121,6 +124,7 @@ export class LayoutPersonalizationService {
         pr.personalization.defaultComponent
       );
     });
+
     return result;
   }
 
@@ -149,19 +153,19 @@ export class LayoutPersonalizationService {
             })
             .catch((error) => {
               console.error(error);
-              personalizedFragments[renderingId] = undefined; // default will be used for undefined fragments
+              personalizedFragments[renderingId] = undefined; // default will be used in case failed to resolve the fragment
             })
         );
       } else if (variantKey === null) {
         // hidden by personalization
         personalizedFragments[renderingId] = null;
       } else {
-        personalizedFragments[renderingId] = undefined; // was not able to resolve decisions for this rendering, default will be used
+        personalizedFragments[renderingId] = undefined; // was not able to resolve decision for the rendering, default will be used
       }
     }
 
-    // wait all fragments is requisted, no fail on error, default should be applied
-    // Promise.allSettled simple polifil.
+    // wait all fragments is requested, no fail on error, default should be applied
+    // Promise.allSettled simple polyfill.
     await Promise.all(
       personalizedFragmentsRequests.map((p) =>
         p.then(

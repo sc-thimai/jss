@@ -15,9 +15,12 @@ export class LayoutPersonalizationUtils {
     defaultComponent: ComponentRendering | null
   ): ComponentRendering | null {
     const personalizedFragment = personalizedFragments[uid];
+
     if (personalizedFragment === null) {
       return null;
-    } else if (personalizedFragment === undefined) {
+    }
+
+    if (personalizedFragment === undefined) {
       return defaultComponent;
     }
 
@@ -28,6 +31,7 @@ export class LayoutPersonalizationUtils {
 
   getPersonalizedComponents(placeholders: PlaceholdersData): PersonalizedComponentRendering[] {
     const result: PersonalizedComponentRendering[] = [];
+
     for (const [, placeholder] of Object.entries(placeholders)) {
       for (const component of placeholder) {
         if (isPersonalizedComponentRendering(component)) {
@@ -38,6 +42,7 @@ export class LayoutPersonalizationUtils {
         }
       }
     }
+
     return result;
   }
 
@@ -57,6 +62,7 @@ export class LayoutPersonalizationUtils {
                 defaultComponent: component.personalization.hiddenByDefault ? null : component,
               },
             };
+
             placeholder[index] = personalizedComponent;
           } else if (isComponentRendering(component) && component.placeholders) {
             this.replacePersonalizedComponentsWithLoaderComponents(
@@ -115,6 +121,7 @@ export class LayoutPersonalizationUtils {
         );
       }
     }
+
     return true;
   }
 

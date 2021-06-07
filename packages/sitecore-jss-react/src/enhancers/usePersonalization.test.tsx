@@ -45,6 +45,7 @@ describe('usePersonalization', () => {
       const TestComponent = () => {
         personalizationResult = usePersonalization({
           uid: 'testuid',
+          componentFactory: componentFactory,
           layoutPersonalizationService: layoutPersonalizationService,
         });
 
@@ -81,6 +82,7 @@ describe('usePersonalization', () => {
       const TestComponent = () => {
         personalizationResult = usePersonalization({
           uid: 'testuid',
+          componentFactory: componentFactory,
           layoutPersonalizationService: layoutPersonalizationService,
         });
 
@@ -116,6 +118,7 @@ describe('usePersonalization', () => {
       const TestComponent = () => {
         personalizationResult = usePersonalization({
           uid: 'testuid',
+          componentFactory: componentFactory,
           layoutPersonalizationService: layoutPersonalizationService,
           missingComponentComponent: missingComponentComponent,
         });
@@ -151,6 +154,7 @@ describe('usePersonalization', () => {
       const TestComponent = () => {
         personalizationResult = usePersonalization({
           uid: 'testuid',
+          componentFactory: componentFactory,
           layoutPersonalizationService: layoutPersonalizationService,
         });
 
@@ -185,6 +189,7 @@ describe('usePersonalization', () => {
       const TestComponent = () => {
         personalizationResult = usePersonalization({
           uid: 'testuid',
+          componentFactory: componentFactory,
           layoutPersonalizationService: layoutPersonalizationService,
         });
 

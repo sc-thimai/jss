@@ -1,13 +1,13 @@
 import { ComponentRendering, LayoutPersonalizationService } from '@sitecore-jss/sitecore-jss';
-import { useEffect, createElement, useReducer } from 'react';
+import { useEffect, createElement, useReducer, ComponentType } from 'react';
 import { MissingComponent } from '../components/MissingComponent';
 import { ComponentFactory } from '../components/sharedTypes';
-import { useComponentFactory } from './withComponentFactory';
 
 export interface UsePersonalizationOptions {
   uid: string;
+  componentFactory: ComponentFactory;
   layoutPersonalizationService: LayoutPersonalizationService;
-  missingComponentComponent?: React.ComponentClass<unknown> | React.FC<unknown>;
+  missingComponentComponent?: ComponentType;
 }
 
 export interface UsePersonalizationResult {
@@ -22,7 +22,6 @@ export interface UsePersonalizationResult {
 export function usePersonalization(options: UsePersonalizationOptions): UsePersonalizationResult {
   // forceUpdate emulating, we need to re-render the component after personalization loading
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
-  const componentFactory = useComponentFactory();
 
   const personalizedComponentLayout = options.layoutPersonalizationService.getPersonalizedComponent(
     options.uid
@@ -49,7 +48,7 @@ export function usePersonalization(options: UsePersonalizationOptions): UsePerso
 
   return {
     personalizedComponent: personalizedComponentLayout
-      ? createPersonalizedComponent(personalizedComponentLayout, options, componentFactory)
+      ? createPersonalizedComponent(personalizedComponentLayout, options)
       : null,
     isLoading: isLoading,
   };
@@ -62,13 +61,12 @@ export function usePersonalization(options: UsePersonalizationOptions): UsePerso
  */
 function createPersonalizedComponent(
   personalizedComponentLayout: ComponentRendering,
-  options: UsePersonalizationOptions,
-  componentFactory: ComponentFactory
+  options: UsePersonalizationOptions
 ): React.ReactElement | null {
   let personalizedComponent: React.ReactElement | null = null;
 
-  if (componentFactory) {
-    let component = componentFactory(personalizedComponentLayout.componentName);
+  if (options.componentFactory) {
+    let component = options.componentFactory(personalizedComponentLayout.componentName);
     if (!component) {
       component = options.missingComponentComponent ?? MissingComponent;
       console.error(

@@ -1,17 +1,17 @@
-import { usePersonalization, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs';
+import { usePersonalization, withComponentFactory } from '@sitecore-jss/sitecore-jss-nextjs';
 import { layoutPersonalizationService } from 'lib/layout-personalization-service';
 import { useI18n } from 'next-localization';
+import { StyleguideComponentProps } from 'lib/component-props';
 
-const PersonalizationLoadingComponent = (props: {
-  rendering: ComponentRendering;
-}): JSX.Element | null => {
+const PersonalizationLoadingComponent = (props: StyleguideComponentProps): JSX.Element | null => {
   const { t } = useI18n();
   const { personalizedComponent, isLoading } = usePersonalization({
     uid: props.rendering.uid as string,
+    componentFactory: props.componentFactory,
     layoutPersonalizationService,
   });
 
   return isLoading ? <div>{t('Loading')}</div> : personalizedComponent;
 };
 
-export default PersonalizationLoadingComponent;
+export default withComponentFactory(PersonalizationLoadingComponent);

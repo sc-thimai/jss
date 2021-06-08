@@ -22,6 +22,14 @@ describe('SitecorePage', () => {
     it('should call loadPersonalization once with passed props', () => {
       shallow(<SitecorePage {...sitecorePageProps} />);
       expect(layoutPersonalizationService.loadPersonalization).to.have.been.callCount(1);
+      expect(layoutPersonalizationService.loadPersonalization).to.have.been.calledWith(
+        {
+          route: sitecorePageProps?.layoutData?.sitecore?.route,
+          itemId: sitecorePageProps?.layoutData?.sitecore?.route?.itemId,
+          ...sitecorePageProps?.layoutData?.sitecore?.context,
+        },
+        sitecorePageProps?.layoutData?.sitecore?.route
+      );
     });
 
     it('should return empty component rendering if application is running in disconnected mode', () => {
@@ -39,13 +47,13 @@ describe('SitecorePage', () => {
         },
       };
       shallow(<SitecorePage {...props} />);
-      expect(layoutPersonalizationService.loadPersonalization).to.have.been.callCount(0);
+      expect(layoutPersonalizationService.loadPersonalization).to.not.have.been.called;
     });
 
     it('should return empty component rendering if application is running on server', () => {
       global.window = undefined;
       shallow(<SitecorePage {...sitecorePageProps} />);
-      expect(layoutPersonalizationService.loadPersonalization).to.have.been.callCount(0);
+      expect(layoutPersonalizationService.loadPersonalization).to.not.have.been.called;
     });
 
     it('should return empty component rendering if application is running in preview mode', () => {
@@ -54,7 +62,7 @@ describe('SitecorePage', () => {
         isPreview: true,
       };
       shallow(<SitecorePage {...props} />);
-      expect(layoutPersonalizationService.loadPersonalization).to.have.been.callCount(0);
+      expect(layoutPersonalizationService.loadPersonalization).to.not.have.been.called;
     });
   });
 });
@@ -76,14 +84,7 @@ const sitecorePageProps: SitecorePageProps = {
   tracked: false,
   isPreview: false,
 };
-
-interface CustomWindow {
-  [key: string]: unknown;
-  document: unknown;
-}
-
 interface Global {
-  window: CustomWindow | undefined;
+  window: undefined;
 }
-
 declare const global: Global;

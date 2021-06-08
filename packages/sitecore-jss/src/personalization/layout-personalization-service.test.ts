@@ -61,13 +61,16 @@ describe('LayoutPersonalizationService', () => {
       layoutPersonalizationUtils.getPersonalizedComponents
         .withArgs(routeData.placeholders)
         .returns([]);
-      (<any>layoutPersonalizationService).personalizationResult = Promise.resolve({});
-      (<any>layoutPersonalizationService).personalizedComponents = {};
+      (<any>(
+        layoutPersonalizationService
+      )).personalizationResult.personalizationOperation = Promise.resolve({});
+      (<any>layoutPersonalizationService).personalizationResult.components = {};
 
       await layoutPersonalizationService.loadPersonalization(context, routeData);
 
-      expect((<any>layoutPersonalizationService).personalizationResult).to.be.null;
-      expect((<any>layoutPersonalizationService).personalizedComponents).to.be.null;
+      expect((<any>layoutPersonalizationService).personalizationResult.personalizationOperation).to
+        .be.undefined;
+      expect((<any>layoutPersonalizationService).personalizationResult.components).to.be.undefined;
     });
 
     it('should return hasPersonalizationComponents false if no personalized components', async () => {
@@ -126,7 +129,7 @@ describe('LayoutPersonalizationService', () => {
 
       expect(result.personalizedFragments).to.be.deep.equal(personalizeComponents);
       expect(result.hasPersonalizationComponents).to.be.true;
-      expect((<any>layoutPersonalizationService).personalizedComponents).to.be.deep.equal(
+      expect((<any>layoutPersonalizationService).personalizationResult.components).to.be.deep.equal(
         personalizeComponents
       );
     });
@@ -140,14 +143,18 @@ describe('LayoutPersonalizationService', () => {
     });
 
     it('should return error if personalizationResult is rejected', () => {
-      (<any>layoutPersonalizationService).personalizationResult = Promise.reject('testError');
+      (<any>(
+        layoutPersonalizationService
+      )).personalizationResult.personalizationOperation = Promise.reject('testError');
       expect(layoutPersonalizationService.loadPersonalizedComponent('test')).to.be.rejectedWith(
         'testError'
       );
     });
 
     it('should return component from personalizationResult', async () => {
-      (<any>layoutPersonalizationService).personalizationResult = Promise.resolve({
+      (<any>(
+        layoutPersonalizationService
+      )).personalizationResult.personalizationOperation = Promise.resolve({
         test1: { componentName: 'cn1' },
       });
 
@@ -157,7 +164,9 @@ describe('LayoutPersonalizationService', () => {
     });
 
     it('should return null if component not found in personalizationResult', async () => {
-      (<any>layoutPersonalizationService).personalizationResult = Promise.resolve({
+      (<any>(
+        layoutPersonalizationService
+      )).personalizationResult.personalizationOperation = Promise.resolve({
         test1: { componentName: 'cn1' },
       });
 
@@ -168,7 +177,7 @@ describe('LayoutPersonalizationService', () => {
   });
 
   describe('isLoading', () => {
-    it('should return false if personalizedComponents is not yet resolved', () => {
+    it('should return true if personalizedComponents is not yet resolved', () => {
       const routeData = { name: 'testroute', placeholders: { 'jss-main': [] } };
       const personalizedRendering = [
         {
@@ -183,7 +192,7 @@ describe('LayoutPersonalizationService', () => {
       const personalizeStub = stub();
       personalizeStub
         .withArgs(context, personalizedRendering)
-        .returns(new Promise((resolve) => setTimeout(() => resolve({}))));
+        .returns(new Promise((resolve) => setTimeout(() => resolve({}), 1)));
       layoutPersonalizationService.personalize = personalizeStub;
 
       layoutPersonalizationService.loadPersonalization(context, routeData);

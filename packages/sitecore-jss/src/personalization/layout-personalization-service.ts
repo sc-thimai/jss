@@ -71,15 +71,15 @@ export class LayoutPersonalizationService {
     return this.personalizationResult.components[componentUid] ?? null;
   }
 
-  isLoading() {
+  isLoading(): boolean {
     return (
-      this.personalizationResult.personalizationOperation !== null &&
-      this.personalizationResult.components === null
+      !!this.personalizationResult.personalizationOperation &&
+      !this.personalizationResult.components
     );
   }
 
   async loadPersonalizedComponent(componentUid: string): Promise<ComponentRendering | null> {
-    if (this.personalizationResult.personalizationOperation === null) {
+    if (!this.personalizationResult.personalizationOperation) {
       throw new Error('loadPersonalization should be called before getting personalized component');
     }
 

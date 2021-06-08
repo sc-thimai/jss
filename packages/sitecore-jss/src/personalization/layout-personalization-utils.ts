@@ -57,12 +57,19 @@ export class LayoutPersonalizationUtils {
     }
 
     for (const placeholder of Object.values(placeholders)) {
-      placeholder.forEach((component) => {
+      placeholder.forEach((component, index) => {
         if (isPersonalizedComponentRendering(component)) {
-          component.personalization.defaultComponent = component.personalization.hiddenByDefault
-            ? null
-            : { ...component };
-          component.componentName = loaderComponentName;
+          const personalizedComponentRendering: PersonalizedComponentRendering = {
+            componentName: loaderComponentName,
+            uid: component.uid,
+            personalization: {
+              hiddenByDefault: component.personalization.hiddenByDefault,
+              defaultComponent: component.personalization.hiddenByDefault
+              ? null
+              : component
+            }
+          };
+          placeholder[index] = personalizedComponentRendering;
         } else if (isComponentRendering(component) && component.placeholders) {
           this.replacePersonalizedComponentsWithLoaderComponents(
             component.placeholders,
@@ -88,10 +95,9 @@ export class LayoutPersonalizationUtils {
     for (const [key, placeholder] of Object.entries(context.placeholders)) {
       const hiddenComponents: string[] = [];
 
-      for (let i = 0; i < placeholder.length; i++) {
-        const component = placeholder[i];
-
-        // component has only uid therefore it need to be replaced with the corresponding fragment
+      placeholder.forEach((component, index) => {
+        // if a component has no other keys but 'uid', it is personalized
+        // such component needs to be replaced with the corresponding fragment
         if ('uid' in component && component.uid && Object.keys(component).length === 1) {
           const personalizedFragment = personalizedFragments[component.uid];
 
@@ -100,14 +106,14 @@ export class LayoutPersonalizationUtils {
           } else if (personalizedFragment) {
             this.replaceNestedPersonalizedRenderings(personalizedFragment, personalizedFragments);
 
-            placeholder[i] = personalizedFragment;
+            placeholder[index] = personalizedFragment;
           } else {
             throw new Error('Fragment is missing');
           }
         } else if (isComponentRendering(component)) {
           this.replaceNestedPersonalizedRenderings(component, personalizedFragments);
         }
-      }
+      });
 
       if (hiddenComponents.length) {
         context.placeholders[key] = placeholder.filter(

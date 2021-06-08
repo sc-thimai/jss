@@ -168,16 +168,55 @@ describe('LayoutPersonalizationService', () => {
   });
 
   describe('isLoading', () => {
-    it('should return false if personalizedComponents is not defined', () => {
+    it('should return false if personalizedComponents is not yet resolved', () => {
+      const routeData = { name: 'testroute', placeholders: { 'jss-main': [] } };
+      const personalizedRendering = [
+        {
+          componentName: 'cn1',
+          uid: 'uid1',
+          personalization: { hiddenByDefault: false, defaultComponent: null },
+        },
+      ];
+      layoutPersonalizationUtils.getPersonalizedComponents
+        .withArgs(routeData.placeholders)
+        .returns(personalizedRendering);
+      const personalizeStub = stub();
+      personalizeStub
+        .withArgs(context, personalizedRendering)
+        .returns(new Promise((resolve) => setTimeout(() => resolve({}))));
+      layoutPersonalizationService.personalize = personalizeStub;
+
+      layoutPersonalizationService.loadPersonalization(context, routeData);
+
       const result = layoutPersonalizationService.isLoading();
 
       expect(result).is.true;
     });
 
-    it('should return true if personalizedComponents is defined', () => {
-      (<any>layoutPersonalizationService).personalizedComponents = {
-        test2: { componentName: 'cn2' },
-      };
+    it('should return true if personalizedComponents is defined', async () => {
+      const routeData = { name: 'testroute', placeholders: { 'jss-main': [] } };
+      const personalizedRendering = [
+        {
+          componentName: 'cn1',
+          uid: 'uid1',
+          personalization: { hiddenByDefault: false, defaultComponent: null },
+        },
+      ];
+      layoutPersonalizationUtils.getPersonalizedComponents
+        .withArgs(routeData.placeholders)
+        .returns(personalizedRendering);
+      const personalizeStub = stub();
+      personalizeStub.withArgs(context, personalizedRendering).returns(Promise.resolve({}));
+      layoutPersonalizationService.personalize = personalizeStub;
+
+      await layoutPersonalizationService.loadPersonalization(context, routeData);
+
+      const result = layoutPersonalizationService.isLoading();
+
+      expect(result).is.false;
+    });
+
+    it('should return false if personalization was not started', () => {
       const result = layoutPersonalizationService.isLoading();
 
       expect(result).is.false;

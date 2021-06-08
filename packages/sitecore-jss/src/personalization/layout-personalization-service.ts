@@ -59,6 +59,7 @@ export class LayoutPersonalizationService {
         })
         .catch((error) => {
           reject(error);
+          this.personalizationResult = null;
         });
     });
   }
@@ -68,7 +69,7 @@ export class LayoutPersonalizationService {
   }
 
   isLoading() {
-    return this.personalizedComponents === null;
+    return this.personalizationResult !== null && this.personalizedComponents === null;
   }
 
   loadPersonalizedComponent(componentUid: string): Promise<ComponentRendering | null> {

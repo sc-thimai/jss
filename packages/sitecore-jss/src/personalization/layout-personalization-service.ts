@@ -146,31 +146,22 @@ export class LayoutPersonalizationService {
             })
             .catch((error) => {
               console.error(error);
-              personalizedFragments[renderingId] = undefined; // default will be used in case failed to resolve the fragment
+
+              // default will be used in case failed to resolve the fragment
+              personalizedFragments[renderingId] = undefined;
             })
         );
       } else if (variantKey === null) {
         // hidden by personalization
         personalizedFragments[renderingId] = null;
       } else {
-        personalizedFragments[renderingId] = undefined; // was not able to resolve decision for the rendering, default will be used
+        // was not able to resolve decision for the rendering, default will be used
+        personalizedFragments[renderingId] = undefined;
       }
     }
 
-    // wait all fragments is requested, no fail on error, default should be applied
-    // Promise.allSettled simple polyfill.
-    await Promise.all(
-      personalizedFragmentsRequests.map((p) =>
-        p.then(
-          () => {
-            /* do nothing. */
-          },
-          () => {
-            /* do nothing. */
-          }
-        )
-      )
-    );
+    await Promise.all(personalizedFragmentsRequests);
+
     return personalizedFragments;
   }
 }

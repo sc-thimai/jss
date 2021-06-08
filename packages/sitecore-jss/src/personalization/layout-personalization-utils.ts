@@ -34,7 +34,7 @@ export class LayoutPersonalizationUtils {
   getPersonalizedComponents(placeholders: PlaceholdersData): PersonalizedComponentRendering[] {
     const result: PersonalizedComponentRendering[] = [];
 
-    for (const [, placeholder] of Object.entries(placeholders)) {
+    for (const placeholder of Object.values(placeholders)) {
       for (const component of placeholder) {
         if (isPersonalizedComponentRendering(component)) {
           result.push(component);
@@ -52,22 +52,24 @@ export class LayoutPersonalizationUtils {
     placeholders: PlaceholdersData,
     loaderComponentName: string
   ) {
-    if (placeholders) {
-      for (const [, placeholder] of Object.entries(placeholders)) {
-        placeholder.forEach((component) => {
-          if (isPersonalizedComponentRendering(component)) {
-            component.personalization.defaultComponent = component.personalization.hiddenByDefault
-              ? null
-              : { ...component };
-            component.componentName = loaderComponentName;
-          } else if (isComponentRendering(component) && component.placeholders) {
-            this.replacePersonalizedComponentsWithLoaderComponents(
-              component.placeholders,
-              loaderComponentName
-            );
-          }
-        });
-      }
+    if (!placeholders) {
+      return;
+    }
+
+    for (const placeholder of Object.values(placeholders)) {
+      placeholder.forEach((component) => {
+        if (isPersonalizedComponentRendering(component)) {
+          component.personalization.defaultComponent = component.personalization.hiddenByDefault
+            ? null
+            : { ...component };
+          component.componentName = loaderComponentName;
+        } else if (isComponentRendering(component) && component.placeholders) {
+          this.replacePersonalizedComponentsWithLoaderComponents(
+            component.placeholders,
+            loaderComponentName
+          );
+        }
+      });
     }
   }
 

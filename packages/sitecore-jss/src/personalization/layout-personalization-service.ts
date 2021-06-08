@@ -72,22 +72,14 @@ export class LayoutPersonalizationService {
     return this.personalizationResult !== null && this.personalizedComponents === null;
   }
 
-  loadPersonalizedComponent(componentUid: string): Promise<ComponentRendering | null> {
+  async loadPersonalizedComponent(componentUid: string): Promise<ComponentRendering | null> {
     if (this.personalizationResult === null) {
-      return Promise.reject(
-        'loadPersonalization should be called before getting personalized component'
-      );
+      throw new Error('loadPersonalization should be called before getting personalized component');
     }
 
-    return new Promise<ComponentRendering | null>((resolve, reject) => {
-      this.personalizationResult
-        ?.then((pr) => {
-          resolve(pr[componentUid] ?? null);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
+    const personalizedComponents = await this.personalizationResult;
+
+    return personalizedComponents[componentUid] ?? null;
   }
 
   async personalize(

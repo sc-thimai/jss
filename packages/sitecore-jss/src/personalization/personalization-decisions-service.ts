@@ -134,11 +134,13 @@ export class RestPersonalizationDecisionsService implements PersonalizationDecis
       .split('&')
       .forEach((param) => {
         this.serviceConfig.currentPageParamsToTrack?.forEach((name) => {
-          if (param.toLowerCase().startsWith(name.toLowerCase().concat('='))) {
-            queryStringParams[name] = decodeURIComponent(
-              param.toLowerCase().substring(name.length + 1)
-            );
+          if (!param.toLowerCase().startsWith(name.toLowerCase().concat('='))) {
+            return;
           }
+
+          queryStringParams[name] = decodeURIComponent(
+            param.toLowerCase().substring(name.length + 1)
+          );
         });
       });
 

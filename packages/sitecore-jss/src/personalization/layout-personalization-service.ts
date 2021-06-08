@@ -8,7 +8,7 @@ import {
   PersonalizationDecisionData,
   PersonalizationDecisionsService,
 } from './personalization-decisions-service';
-import { LayoutFragmentService, LayoutFragmentData } from './layout-fragment-service';
+import { LayoutFragmentService } from './layout-fragment-service';
 import { LayoutPersonalizationUtils } from './layout-personalization-utils';
 
 export interface PersonalizationResult {
@@ -22,24 +22,25 @@ export interface PersonalizationLoadResult {
 }
 
 export class LayoutPersonalizationService {
+  private personalizationResult: {
+    personalizationOperation?: Promise<{
+      [key: string]: ComponentRendering | null;
+    }>;
+    components?: { [key: string]: ComponentRendering | null };
+  } = {};
   private layoutPersonalizationUtils = new LayoutPersonalizationUtils();
-  private personalizationResult: Promise<{
-    [key: string]: ComponentRendering | null;
-  }> | null = null;
-  private personalizedComponents: { [key: string]: ComponentRendering | null } | null = null;
 
   constructor(
     private personalizationDecisionsService: PersonalizationDecisionsService,
     private layoutFragmentService: LayoutFragmentService
   ) {}
 
-  loadPersonalization(
+  async loadPersonalization(
     context: LayoutServiceContext,
     route: RouteData
   ): Promise<PersonalizationLoadResult> {
     // clear personalization before getting new one
-    this.personalizationResult = null;
-    this.personalizedComponents = null;
+    this.personalizationResult = {};
 
     const personalizedRenderings = this.layoutPersonalizationUtils.getPersonalizedComponents(
       route.placeholders
@@ -49,35 +50,43 @@ export class LayoutPersonalizationService {
       return Promise.resolve({ hasPersonalizationComponents: false });
     }
 
-    this.personalizationResult = this.personalize(context, personalizedRenderings);
+    const currentResult = this.personalizationResult;
+    currentResult.personalizationOperation = this.personalize(context, personalizedRenderings);
 
-    return new Promise<PersonalizationLoadResult>((resolve, reject) => {
-      this.personalizationResult
-        ?.then((pr) => {
-          this.personalizedComponents = pr;
-          resolve({ personalizedFragments: pr, hasPersonalizationComponents: true });
-        })
-        .catch((error) => {
-          reject(error);
-          this.personalizationResult = null;
-        });
-    });
+    try {
+      const components = await currentResult.personalizationOperation;
+      currentResult.components = components;
+      return { personalizedFragments: components, hasPersonalizationComponents: true };
+    } catch (error) {
+      currentResult.personalizationOperation = undefined;
+      throw error;
+    }
   }
 
   getPersonalizedComponent(componentUid: string): ComponentRendering | null {
-    return this.personalizedComponents && (this.personalizedComponents[componentUid] ?? null);
+    if (!this.personalizationResult.components) {
+      return null;
+    }
+
+    return this.personalizationResult.components[componentUid] ?? null;
   }
 
   isLoading() {
-    return this.personalizationResult !== null && this.personalizedComponents === null;
+    return (
+      this.personalizationResult.personalizationOperation !== null &&
+      this.personalizationResult.components === null
+    );
   }
 
   async loadPersonalizedComponent(componentUid: string): Promise<ComponentRendering | null> {
-    if (this.personalizationResult === null) {
+    if (this.personalizationResult.personalizationOperation === null) {
       throw new Error('loadPersonalization should be called before getting personalized component');
     }
 
-    const personalizedComponents = await this.personalizationResult;
+    const personalizedComponents = await this.personalizationResult.personalizationOperation;
+    if (!personalizedComponents) {
+      return null;
+    }
 
     return personalizedComponents[componentUid] ?? null;
   }
@@ -127,7 +136,7 @@ export class LayoutPersonalizationService {
   ) {
     const personalizedFragments: { [key: string]: ComponentRendering | null | undefined } = {};
     const renderingsDecisions = personalizationDecisionsResult.renderings;
-    const personalizedFragmentsRequests: Promise<void | LayoutFragmentData>[] = [];
+    const personalizedFragmentsRequests: Promise<void>[] = [];
 
     for (const [renderingId, decision] of Object.entries(renderingsDecisions)) {
       const variantKey = decision?.variantKey;

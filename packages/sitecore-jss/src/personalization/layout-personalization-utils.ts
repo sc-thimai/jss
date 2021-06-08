@@ -64,10 +64,8 @@ export class LayoutPersonalizationUtils {
             uid: component.uid,
             personalization: {
               hiddenByDefault: component.personalization.hiddenByDefault,
-              defaultComponent: component.personalization.hiddenByDefault
-              ? null
-              : component
-            }
+              defaultComponent: component.personalization.hiddenByDefault ? null : component,
+            },
           };
           placeholder[index] = personalizedComponentRendering;
         } else if (isComponentRendering(component) && component.placeholders) {

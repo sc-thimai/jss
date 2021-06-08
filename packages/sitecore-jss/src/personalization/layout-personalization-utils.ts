@@ -4,8 +4,6 @@ import {
   isPersonalizedComponentRendering,
   ComponentRendering,
   PlaceholdersData,
-  hasPersonalization,
-  HtmlElementRendering,
 } from '../layout/models';
 
 export class LayoutPersonalizationUtils {
@@ -24,9 +22,13 @@ export class LayoutPersonalizationUtils {
       return defaultComponent;
     }
 
-    return this.replaceNestedPersonalizedRenderings(personalizedFragment, personalizedFragments)
-      ? personalizedFragment
-      : defaultComponent;
+    try {
+      this.replaceNestedPersonalizedRenderings(personalizedFragment, personalizedFragments);
+      return personalizedFragment;
+    } catch (error) {
+      console.error(error);
+      return defaultComponent;
+    }
   }
 
   getPersonalizedComponents(placeholders: PlaceholdersData): PersonalizedComponentRendering[] {
@@ -52,18 +54,12 @@ export class LayoutPersonalizationUtils {
   ) {
     if (placeholders) {
       for (const [, placeholder] of Object.entries(placeholders)) {
-        placeholder.forEach((component, index) => {
-          if (hasPersonalization(component) && component.personalization) {
-            const personalizedComponent: PersonalizedComponentRendering = {
-              componentName: loaderComponentName,
-              uid: component.uid as string,
-              personalization: {
-                hiddenByDefault: component.personalization.hiddenByDefault,
-                defaultComponent: component.personalization.hiddenByDefault ? null : component,
-              },
-            };
-
-            placeholder[index] = personalizedComponent;
+        placeholder.forEach((component) => {
+          if (isPersonalizedComponentRendering(component)) {
+            component.personalization.defaultComponent = component.personalization.hiddenByDefault
+              ? null
+              : { ...component };
+            component.componentName = loaderComponentName;
           } else if (isComponentRendering(component) && component.placeholders) {
             this.replacePersonalizedComponentsWithLoaderComponents(
               component.placeholders,
@@ -82,55 +78,41 @@ export class LayoutPersonalizationUtils {
   private replaceNestedPersonalizedRenderings(
     context: ComponentRendering,
     personalizedFragments: { [key: string]: ComponentRendering | null | undefined }
-  ): boolean {
+  ) {
     if (!context.placeholders) {
-      return true;
+      return;
     }
 
     for (const [key, placeholder] of Object.entries(context.placeholders)) {
-      const hiddenComponents: PersonalizedComponentRendering[] = [];
+      const hiddenComponents: string[] = [];
 
       for (let i = 0; i < placeholder.length; i++) {
         const component = placeholder[i];
-        if (!this.requirePersonalization(component)) {
-          continue;
-        }
 
-        const personalizedFragment = personalizedFragments[component.uid];
-        if (personalizedFragment === null) {
-          hiddenComponents.push(component);
-        } else if (personalizedFragment) {
-          const wasReplaced = this.replaceNestedPersonalizedRenderings(
-            personalizedFragment,
-            personalizedFragments
-          );
-          if (!wasReplaced) {
-            return false;
+        // component has only uid therefore it need to be replaced with the corresponding fragment
+        if ('uid' in component && component.uid && Object.keys(component).length === 1) {
+          const personalizedFragment = personalizedFragments[component.uid];
+
+          if (personalizedFragment === null) {
+            hiddenComponents.push(component.uid);
+          } else if (personalizedFragment) {
+            this.replaceNestedPersonalizedRenderings(personalizedFragment, personalizedFragments);
+
+            placeholder[i] = personalizedFragment;
+          } else {
+            throw new Error('Fragment is missing');
           }
-          placeholder[i] = personalizedFragment;
-        } else {
-          return false;
+        } else if (isComponentRendering(component)) {
+          this.replaceNestedPersonalizedRenderings(component, personalizedFragments);
         }
       }
 
       if (hiddenComponents.length) {
         context.placeholders[key] = placeholder.filter(
           (component) =>
-            !isPersonalizedComponentRendering(component) ||
-            hiddenComponents.indexOf(component) === -1
+            'uid' in component && component.uid && hiddenComponents.indexOf(component.uid) === -1
         );
       }
     }
-
-    return true;
-  }
-
-  /**
-   * @param {PersonalizedComponentRendering | ComponentRendering | HtmlElementRendering} component
-   */
-  private requirePersonalization(
-    component: PersonalizedComponentRendering | ComponentRendering | HtmlElementRendering
-  ): component is PersonalizedComponentRendering {
-    return component && Object.keys(component).length === 1 && 'uid' in component;
   }
 }

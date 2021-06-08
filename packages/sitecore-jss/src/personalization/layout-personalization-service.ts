@@ -1,7 +1,7 @@
 import {
   ComponentRendering,
-  PersonalizedComponentRendering,
   LayoutServiceContext,
+  PersonalizedComponentRendering,
   RouteData,
 } from '../layout/models';
 import {

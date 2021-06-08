@@ -20,10 +20,3 @@ export function withComponentFactory<T extends ComponentFactoryProps>(
     );
   };
 }
-
-/**
- * This hook grants acсess to the current ComponentFactory context
- */
-export function useComponentFactory() {
-  return React.useContext(ComponentFactoryReactContext);
-}

@@ -50,5 +50,5 @@ export {
 export { withSitecoreContext, useSitecoreContext } from './enhancers/withSitecoreContext';
 export { withExperienceEditorChromes } from './enhancers/withExperienceEditorChromes';
 export { withPlaceholder } from './enhancers/withPlaceholder';
-export { withComponentFactory, useComponentFactory } from './enhancers/withComponentFactory';
+export { withComponentFactory } from './enhancers/withComponentFactory';
 export { usePersonalization } from './enhancers/usePersonalization';

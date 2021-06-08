@@ -116,6 +116,5 @@ export {
   withExperienceEditorChromes,
   withPlaceholder,
   withComponentFactory,
-  useComponentFactory,
   usePersonalization,
 } from '@sitecore-jss/sitecore-jss-react';

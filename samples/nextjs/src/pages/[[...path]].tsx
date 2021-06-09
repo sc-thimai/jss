@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import NotFound from 'src/NotFound';
 import Layout from 'src/Layout';
@@ -6,15 +6,14 @@ import {
   SitecoreContext,
   ComponentPropsContext,
   handleExperienceEditorFastRefresh,
-  isServer,
 } from '@sitecore-jss/sitecore-jss-nextjs';
 import { StyleguideSitecoreContextValue } from 'lib/component-props';
 import { SitecorePageProps } from 'lib/page-props';
 import { sitecorePagePropsFactory } from 'lib/page-props-factory';
 import { componentFactory } from 'temp/componentFactory';
 import { sitemapFetcher } from 'lib/sitemap-fetcher';
-import { trackingService } from 'lib/tracking-service';
-import { layoutPersonalizationService } from 'lib/layout-personalization-service';
+import { loadPersonalization } from 'lib/layout-personalization-service';
+import { useRouter } from 'next/router';
 
 const SitecorePage = ({
   notFound,
@@ -38,34 +37,8 @@ const SitecorePage = ({
     ...layoutData.sitecore.context,
   };
 
-  // Start loading personalization before render occurs, personalization loading components rely in service state
-  // Do not load personalization twice for pages with query, see Caveats for dynamic routes in Next.js doc
-  useMemo(() => {
-    const disconnectedMode =
-      layoutData.sitecore.route &&
-      layoutData.sitecore.route.layoutId === 'available-in-connected-mode';
-    if (disconnectedMode) {
-      return;
-    }
-    // Load personalization client side only
-    if (isServer()) {
-      return;
-    }
-    // Do not trigger client tracking when pages are requested by Sitecore XP instance:
-    // - no need to track in Edit and Preview modes
-    // - in Explore mode all requests will be tracked by Sitecore XP out of the box
-    if (isPreview) {
-      return;
-    }
-
-    layoutPersonalizationService.loadPersonalization(context, context.route).then((p) => {
-      if (!p.hasPersonalizationComponents) {
-        trackingService
-          .trackCurrentPage(layoutData.sitecore.context, layoutData.sitecore.route)
-          .catch((error: unknown) => console.error('Tracking failed: ' + error));
-      }
-    });
-  }, [isPreview, layoutData]);
+  // Start loading personalization before render occurs, do not awaiting result as do not want block page rendering
+  loadPersonalization({ layoutData, isPreview }, useRouter());
 
   return (
     <ComponentPropsContext value={componentProps}>

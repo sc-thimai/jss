@@ -11,7 +11,7 @@ export const getPublicUrl = (): string => {
 /*
  * Pages that are statically optimized will be hydrated without their route parameters provided.
  * After hydration, Next.js will trigger an update to your application to provide the route parameters in the query object.
- * Details coudld be found on Caveats section for dynamic routes in Next.js doc
+ * Details could be found on Caveats section for dynamic routes in Next.js doc
  *
  * The latest Next.js version has router.isReady property.
  * TODO: Remove it after switching to the latest Next.js version.

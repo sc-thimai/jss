@@ -34,10 +34,12 @@ export const loadPersonalization = async (
   if (disconnectedMode) {
     return;
   }
+
   // Load personalization client side only
   if (isServer()) {
     return;
   }
+
   // Do not trigger client tracking when pages are requested by Sitecore XP instance:
   // - no need to track in Edit and Preview modes
   // - in Explore mode all requests will be tracked by Sitecore XP out of the box
@@ -52,7 +54,7 @@ export const loadPersonalization = async (
   /*
    * Pages that are statically optimized will be hydrated without their route parameters provided.
    * After hydration, Next.js will trigger an update to your application to provide the route parameters in the query object.
-   * Details coudld be found on Caveats section for dynamic routes in Next.js doc
+   * Details could be found on Caveats section for dynamic routes in Next.js doc
    */
   if (!areQueryParamsReady(router)) {
     return;
@@ -62,14 +64,18 @@ export const loadPersonalization = async (
     pageProps.layoutData.sitecore.context,
     pageProps.layoutData.sitecore.route
   );
-  if (!personalizationResult.hasPersonalizationComponents && !pageProps.tracked) {
-    try {
-      await trackingService.trackCurrentPage(
-        pageProps.layoutData.sitecore.context,
-        pageProps.layoutData.sitecore.route
-      );
-    } catch (error) {
-      console.error('Tracking failed: ' + error);
-    }
+
+  // page is already tracked either by Personalization decision service or by Layout service
+  if (personalizationResult.hasPersonalizationComponents || pageProps.tracked) {
+    return;
+  }
+
+  try {
+    await trackingService.trackCurrentPage(
+      pageProps.layoutData.sitecore.context,
+      pageProps.layoutData.sitecore.route
+    );
+  } catch (error) {
+    console.error('Tracking failed: ' + error);
   }
 };

@@ -1,4 +1,8 @@
-import { usePersonalization, withComponentFactory } from '@sitecore-jss/sitecore-jss-nextjs';
+import {
+  isServer,
+  usePersonalization,
+  withComponentFactory,
+} from '@sitecore-jss/sitecore-jss-nextjs';
 import { layoutPersonalizationService } from 'lib/layout-personalization-service';
 import { useI18n } from 'next-localization';
 import { StyleguideComponentProps } from 'lib/component-props';
@@ -11,7 +15,7 @@ const PersonalizationLoadingComponent = (props: StyleguideComponentProps): JSX.E
     layoutPersonalizationService,
   });
 
-  return isLoading ? <div>{t('Loading')}</div> : personalizedComponent;
+  return isServer() || isLoading ? <div>{t('Loading')}</div> : personalizedComponent;
 };
 
 export default withComponentFactory(PersonalizationLoadingComponent);

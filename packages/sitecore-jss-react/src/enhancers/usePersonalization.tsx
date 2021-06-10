@@ -4,20 +4,39 @@ import { MissingComponent } from '../components/MissingComponent';
 import { ComponentFactory } from '../components/sharedTypes';
 
 export interface UsePersonalizationOptions {
+  /**
+   * The unique identifier of the component
+   */
   uid: string;
+  /**
+   * The component factory
+   */
   componentFactory: ComponentFactory;
+  /**
+   * The layout personalization service
+   */
   layoutPersonalizationService: LayoutPersonalizationService;
+  /**
+   * The component type for a missing component
+   */
   missingComponentComponent?: ComponentType;
 }
 
 export interface UsePersonalizationResult {
+  /**
+   * A value that indicates whether loading is in-progress
+   */
   isLoading: boolean;
+  /**
+   * The personalized component
+   */
   personalizedComponent: React.ReactElement | null;
 }
 
 /**
  * This hook encapsulates awaiting for personalized component and its creation.
  * @param {UsePersonalizationOptions} options
+ * @returns {UsePersonalizationResult} result
  */
 export function usePersonalization(options: UsePersonalizationOptions): UsePersonalizationResult {
   // forceUpdate emulating, we need to re-render the component after personalization loading
@@ -58,6 +77,7 @@ export function usePersonalization(options: UsePersonalizationOptions): UsePerso
  * @param {ComponentRendering} personalizedComponentLayout
  * @param {UsePersonalizationOptions} options
  * @param {ComponentFactory} componentFactory
+ * @returns {React.ReactElement} component
  */
 function createPersonalizedComponent(
   personalizedComponentLayout: ComponentRendering,

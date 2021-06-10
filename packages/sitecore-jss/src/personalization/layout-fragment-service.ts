@@ -73,6 +73,15 @@ export class GraphQLLayoutFragmentService implements LayoutFragmentService {
   ): Promise<LayoutFragmentData> {
     const query = this.getLayoutFragmentQuery(routePath, language, renderingId, variantKey);
 
+    debug.layoutFragment(
+      'fetching layout fragment data for %s %s %s %s %s',
+      routePath,
+      language,
+      renderingId,
+      variantKey,
+      this.serviceConfig.siteName
+    );
+
     const data = await this.createClient().request<{
       layoutFragment: LayoutFragmentData;
     }>(query);
@@ -83,7 +92,7 @@ export class GraphQLLayoutFragmentService implements LayoutFragmentService {
   private createClient(): GraphQLRequestClient {
     const { endpoint, apiKey, timeout } = this.serviceConfig;
 
-    return new GraphQLRequestClient(endpoint, { apiKey, debugger: debug.layout, timeout });
+    return new GraphQLRequestClient(endpoint, { apiKey, debugger: debug.layoutFragment, timeout });
   }
 
   private getLayoutFragmentQuery(

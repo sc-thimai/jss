@@ -28,4 +28,6 @@ export default Object.freeze({
   experienceEditor: debug(`${rootNamespace}:editing`),
   sitemap: debug(`${rootNamespace}:sitemap`),
   tracking: debug(`${rootNamespace}:tracking`),
+  layoutFragment: debug(`${rootNamespace}:fragment`),
+  personalizationDecisions: debug(`${rootNamespace}:personalizationDecisions`),
 });

@@ -1,5 +1,6 @@
 import { AxiosDataFetcher } from './../axios-fetcher';
 import { fetchData, HttpDataFetcher } from './../data-fetcher';
+import debug from '../debug';
 
 export interface RenderingPersonalizationDecision {
   variantKey?: string;
@@ -108,6 +109,13 @@ export class RestPersonalizationDecisionsService implements PersonalizationDecis
       referrer: window.document.referrer,
       url: window.location.pathname + window.location.search,
     };
+
+    debug.personalizationDecisions(
+      'fetching personalization decisions for %o %o',
+      queryParams,
+      requestBody
+    );
+
     return fetchData<PersonalizationDecisionData>(
       this.serviceConfig.serviceUrl ?? `${this.serviceConfig.host}${this.serviceConfig.route}`,
       fetcher,
@@ -117,7 +125,10 @@ export class RestPersonalizationDecisionsService implements PersonalizationDecis
   }
 
   private getDefaultFetcher = <T>() => {
-    const axiosFetcher = new AxiosDataFetcher({ timeout: this.serviceConfig.timeout });
+    const axiosFetcher = new AxiosDataFetcher({
+      timeout: this.serviceConfig.timeout,
+      debugger: debug.personalizationDecisions,
+    });
 
     const fetcher = (url: string, data?: unknown) => {
       return axiosFetcher.fetch<T>(url, data);

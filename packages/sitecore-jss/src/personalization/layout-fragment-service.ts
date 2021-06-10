@@ -3,10 +3,17 @@ import { GraphQLRequestClient } from './../graphql-request-client';
 import debug from './../debug';
 
 export interface LayoutFragmentData {
+  /**
+   * The fragment
+   * @type {ComponentRendering}
+   */
   fragment: ComponentRendering;
 }
 
 export interface LayoutFragmentService {
+  /**
+   * The fetcher of the layout fragment data
+   */
   fetchLayoutFragmentData(
     routePath: string,
     language: string,

@@ -1,0 +1,21 @@
+{
+  "name": "dir",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "open": "node_modules\\.bin\\cypress open --config-file cypress.json",
+    "deploy": "node_modules\\.bin\\cypress run --spec '.\\cypress\\integration\\deploy.spec.js'",
+    "start": "cd ..\\..\\samples\\nextjs && jss start:connected",
+    "test": "node_modules\\.bin\\cypress run --spec '.\\cypress\\integration\\content-editor.spec.js'"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^6.6.0",
+    "cypress-iframe": "^1.0.1",
+    "eslint-plugin-cypress": "^2.11.2",
+    "start-server-and-test": "^1.12.1",
+    "cypress-teamcity-reporter": "^3.0.0"
+  }
+}

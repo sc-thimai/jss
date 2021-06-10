@@ -12,15 +12,31 @@ import { LayoutFragmentService } from './layout-fragment-service';
 import { LayoutPersonalizationUtils } from './layout-personalization-utils';
 
 export interface PersonalizationResult {
+  /**
+   * The route
+   */
   route?: RouteData;
+  /**
+   * A value that indicates whether the route is personalized
+   */
   isRoutePersonalized: boolean;
 }
 
 export interface PersonalizationLoadResult {
+  /**
+   * A value that indicates whether the are personalized components
+   */
   hasPersonalizationComponents: boolean;
+  /**
+   * The personalized fragments
+   */
   personalizedFragments?: { [key: string]: ComponentRendering | null };
 }
 
+/**
+ * The layout personalization service that provides the asynchronous API
+ * to initiate the personalization and load personalized components
+ */
 export class LayoutPersonalizationService {
   private personalizationResult: {
     personalizationOperation?: Promise<{
@@ -35,6 +51,12 @@ export class LayoutPersonalizationService {
     private layoutFragmentService: LayoutFragmentService
   ) {}
 
+  /**
+   * Loads the personalized data.
+   * @param {LayoutServiceContext} context The layout service context.
+   * @param {RouteData} route The route.
+   * @returns {PersonalizationLoadResult} The personalization load result.
+   */
   async loadPersonalization(
     context: LayoutServiceContext,
     route: RouteData
@@ -63,6 +85,11 @@ export class LayoutPersonalizationService {
     }
   }
 
+  /**
+   * Gets the personalized component.
+   * @param {string} componentUid The unique identifier of a component.
+   * @returns {ComponentRendering} The personalized component.
+   */
   getPersonalizedComponent(componentUid: string): ComponentRendering | null {
     if (!this.personalizationResult.components) {
       return null;
@@ -71,6 +98,10 @@ export class LayoutPersonalizationService {
     return this.personalizationResult.components[componentUid] ?? null;
   }
 
+  /**
+   * Provides a value that indicates whether the loading is in-progress.
+   * @returns {boolean} The value that indicates whether the loading is in-progress.
+   */
   isLoading(): boolean {
     return (
       !!this.personalizationResult.personalizationOperation &&
@@ -78,6 +109,11 @@ export class LayoutPersonalizationService {
     );
   }
 
+  /**
+   * Loads the personalized component.
+   * @param {string} componentUid The unique identifier of a component.
+   * @returns {ComponentRendering} The personalized component.
+   */
   async loadPersonalizedComponent(componentUid: string): Promise<ComponentRendering | null> {
     if (!this.personalizationResult.personalizationOperation) {
       throw new Error('loadPersonalization should be called before getting personalized component');
@@ -91,6 +127,12 @@ export class LayoutPersonalizationService {
     return personalizedComponents[componentUid] ?? null;
   }
 
+  /**
+   * Loads the personalized components.
+   * @param {LayoutServiceContext} context The layout service context.
+   * @param {PersonalizedComponentRendering[]} personalizedRenderings The personalized renderings.
+   * @returns {{ [key: string]: ComponentRendering | null }} The personalized components.
+   */
   async personalize(
     context: LayoutServiceContext,
     personalizedRenderings: PersonalizedComponentRendering[]
@@ -130,6 +172,11 @@ export class LayoutPersonalizationService {
     return result;
   }
 
+  /**
+   * Resolves the fragments.
+   * @param {PersonalizationDecisionData} personalizationDecisionsResult The personalization decisions.
+   * @param {LayoutServiceContext} context The layout service context.
+   */
   private async resolveFragments(
     personalizationDecisionsResult: PersonalizationDecisionData,
     context: LayoutServiceContext

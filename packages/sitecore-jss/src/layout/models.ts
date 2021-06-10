@@ -92,7 +92,9 @@ export interface ComponentRendering {
 }
 
 /**
+ * Verifies the component is of @see {ComponentRendering}
  * @param {ComponentRendering | HtmlElementRendering} component
+ * @returns {ComponentRendering} type predicate
  */
 export function isComponentRendering(
   component: ComponentRendering | HtmlElementRendering
@@ -101,7 +103,9 @@ export function isComponentRendering(
 }
 
 /**
+ * Verifies the component is of @see {PersonalizedComponentRendering}
  * @param {ComponentRendering | HtmlElementRendering} component
+ * @returns {PersonalizedComponentRendering} type predicate
  */
 export function isPersonalizedComponentRendering(
   component: ComponentRendering | HtmlElementRendering

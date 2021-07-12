@@ -1,6 +1,7 @@
 export {
   dataApi,
   mediaApi,
+  constants,
   // generic data access
   HttpDataFetcher,
   HttpResponse,
@@ -41,8 +42,6 @@ export {
 
 export { ManifestInstance } from '@sitecore-jss/sitecore-jss-manifest';
 
-export * from './constants';
-
 export {
   ComponentPropsCollection,
   GetStaticComponentProps,
@@ -69,7 +68,7 @@ export {
   useComponentProps,
 } from './components/ComponentPropsContext';
 
-export { handleExperienceEditorFastRefresh } from './utils';
+export { handleExperienceEditorFastRefresh, getPublicUrl } from './utils';
 
 export { EditingData, EditingPreviewData, isEditingData } from './sharedTypes/editing-data';
 export {
@@ -100,4 +99,5 @@ export {
   useSitecoreContext,
   withExperienceEditorChromes,
   withPlaceholder,
+  withDatasourceCheck,
 } from '@sitecore-jss/sitecore-jss-react';

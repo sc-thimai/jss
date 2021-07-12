@@ -104,12 +104,12 @@ export default {
         },
         {
           url: 'getStaticPaths',
-          displayName: 'getStaticPaths & sitemap service',
+          displayName: 'getStaticPaths',
         },
-        //{
-        //  url: 'customizing-static-paths',
-        //  displayName: 'Customizing static paths',
-        //},
+        {
+         url: 'customizing-static-paths',
+         displayName: 'Customizing static paths',
+        },
         {
           url: 'component-level-data-fetching',
           displayName: 'Component-level data fetching',
@@ -128,10 +128,10 @@ export default {
         //  url: 'edge-schema-introduction',
         //  displayName: 'Introduction to the Edge Schema',
         //},
-        //{
-        //  url: 'sample-app',
-        //  displayName: 'Sitecore GraphQL in the sample app',
-        //},
+        {
+         url: 'sample-app',
+         displayName: 'Sitecore GraphQL in the sample app',
+        },
         {
           url: 'introspection',
           displayName: 'Introspecting the GraphQL schema'

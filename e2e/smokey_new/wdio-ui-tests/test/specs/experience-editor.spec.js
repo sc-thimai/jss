@@ -81,9 +81,9 @@ describe('Experience Editor Tests*', function() {
     );
     await Base.ContentEditorPage.publishSite(process.env.APPNAME);
     visitLocalHost();
-    await browser.refreshUntilDisplayed({ element: `h2=${newEdit}`, options: { timeout: 20000 } });
-    await browser.displayed({ element: `h2=${newEdit}`, options: { timeout: 20000 } });
-    let actualTxtFromStartedApp = await $(`h2=${newEdit}`);
+    await browser.refreshUntilDisplayed({ element: `span*=${newEdit}`, options: { timeout: 20000 } });
+    await browser.displayed({ element: `span*=${newEdit}`, options: { timeout: 25000 } });
+    let actualTxtFromStartedApp = await $(`span*=${newEdit}`);
     let actual = await actualTxtFromStartedApp.getText();
     assert(
       newEdit === actual.trim(),

@@ -58,7 +58,7 @@ class ExperienceEditorPage extends Page {
     await browser.click({ element: this.getElementById('OK') });
     await this.switchToNestedIframe();
 
-    await browser.click({ element: 'span*=ContentBlock-1' });
+    await browser.click({ element: 'span*=ContentBlock-2' });
     await browser.click({ element: this.getElementById('OK') });
     await browser.pause(1000);
   }

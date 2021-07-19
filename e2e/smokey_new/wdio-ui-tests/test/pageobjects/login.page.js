@@ -1,4 +1,5 @@
 const Page = require('./page');
+require('dotenv').config();
 
 class LoginPage extends Page {
   async login(username = process.env.USER_NAME, password = process.env.PASSWORD) {

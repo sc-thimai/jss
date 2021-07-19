@@ -37,7 +37,7 @@ Cypress.Commands.add('removeDir', (path) => {
     cy.log(`Directory '${path}' exists - ${res}`);
 
     if (res) {
-      cy.task('removeDir', path).then(function(res) {
+      cy.task('removeDir', path, { timeout: 200000 }).then(function(res) {
         cy.log(`Remove directory '${path}' status - ${res}`);
       });
     }
@@ -108,3 +108,5 @@ Cypress.Commands.add('readFileFromSCContainer', (filepath) => {
     ).to.equal(0);
   });
 });
+
+Cypress.Commands.overwrite('log', (subject, message) => cy.task('log', message));

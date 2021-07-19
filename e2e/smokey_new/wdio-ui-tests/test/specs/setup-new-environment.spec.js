@@ -9,10 +9,10 @@ describe('Setup new environment', function() {
   });
 
   it('Should prepare env', async function() {
-    await Base.UserManagerPage.enableAdministratorPermissionForUser('JssImport');
-    await Base.ControlPanelPage.populateSchemaAndIndexingManager();
-    await Base.WorkboxPage.publishContentItems();
-    // console.log(await Base.ContentEditorPage.createApiKey());
+    // await Base.UserManagerPage.enableAdministratorPermissionForUser('JssImport');
+    // await Base.ControlPanelPage.populateSchemaAndIndexingManager();
+    // await Base.WorkboxPage.publishContentItems();
+    console.log(await Base.ContentEditorPage.createApiKey());
     // console.log(await Base.ContentEditorPage.getApiKey('API Key'));
   });
 });

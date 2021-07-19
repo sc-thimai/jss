@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  cypress:
+    image: 'cypress/included:6.8.0'
+    platform: 'linux'
+    environment: 
+      - CYPRESS_baseUrl=https://f01a2fb722b5.ngrok.io
+    working_dir: /cypress-poc
+    volumes:
+      - ./:/cypress-poc
+    command: '--spec ./cypress/integration/deploy.spec.js'
+    

@@ -1,0 +1,1 @@
+DISABLE_RERUN=true node_modules/.bin/wdio wdio.conf.js  --spec=C:/Sitecore/jss-fork/jss/e2e/smokey_new/wdio-ui-tests/test/specs/experience-editor.spec.js

@@ -24,3 +24,5 @@ Cypress.on('uncaught:exception', (err, runnable) => {
     return false;
   }
 });
+
+Cypress.Commands.overwrite('log', (subject, message) => cy.task('log', message));

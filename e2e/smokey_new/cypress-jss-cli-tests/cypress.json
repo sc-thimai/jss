@@ -1,12 +1,11 @@
 {
     "baseUrl": "https://cm.jssdev",
     "env": {
-        "FRAMEWORK": "nextjs",
-        "USERNAME": "admin",
-        "PASSWORD": "b",
         "INSTANCE_PATH": "C:\\Sitecore\\sitecore-jss-dev\\docker\\deploy\\platform",
         "APIKEY": "",
-        "SAMPLEAPPRELPATH": "..\\..\\..\\samples"
+        "SAMPLEAPPRELPATH": "..\\..\\..\\samples",
+        "BRANCH": "release/18.0.0",
+        "NODE_TLS_REJECT_UNAUTHORIZED": 1
     },
     "pluginsFile": "cypress/plugins/index.js",
     "execTimeout": 80000,

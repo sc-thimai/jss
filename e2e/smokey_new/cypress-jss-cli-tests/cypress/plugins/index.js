@@ -74,5 +74,21 @@ module.exports = (on, config) => {
       });
       return null;
     },
+    editJSSWebConfig({ filepath, serverSideRenderingEndpointUrl, hostName } = {}) {
+      let webConfig = fs.readFileSync(filepath, 'utf8');
+      if (serverSideRenderingEndpointUrl) {
+        let serverSideRenderingEndpoint = webConfig.match(
+          /(?<=serverSideRenderingEngineEndpointUrl=")(.*)(?=")/g
+        )[0];
+        webConfig = webConfig.replace(serverSideRenderingEndpoint, serverSideRenderingEndpointUrl);
+      }
+      if (hostName) {
+        let hostNameEndpoint = webConfig.match(/(?<=hostName=")(.*)(?=")/g)[0];
+        webConfig = webConfig.replace(hostNameEndpoint, hostName);
+      }
+      fs.writeFileSync(filepath, webConfig);
+      return null;
+    },
   });
 };
+// console.log(execSync(cmd, options));
